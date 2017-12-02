@@ -67,12 +67,12 @@ var setGraphAttr = function(val) {
 	this.element().setAttribute('marker-end', dir < 0 ? 'url(#edgeRevArrowEnd)' : 'url(#edgeArrowEnd)');
 };
 
-//var ko = require('knockout');
 var components = require('ungit-components');
 var GraphViewFactory = components.registered.graph;
 
 components.register('graph', function(args) {
 	var gv = GraphViewFactory(args);
+	isInit = false;
 	gv.__parent = {
 		getEdge: gv.getEdge.bind(gv),
 		updateNode: gv.updateNode.bind(gv)
@@ -84,37 +84,9 @@ components.register('graph', function(args) {
 		return edge;
 	};
 	gv.updateNode = function(parentElement) {
-		//ko.renderTemplate('edges', this, {}, parentElement);
 		this.__parent.updateNode(parentElement);
 	}
 	return gv;
 });
 
 
-
-
-/*
-var ko = require('knockout');
-
-class EdgesViewModel {
-	getEdge(nodeAsha1, nodeBsha1) {
-		console.log('edges get', this);
-		doInit();
-		var edge = super.getEdge(nodeAsha1, nodeBsha1);
-		edge.setGraphAttr = setGraphAttr;
-		return edge;
-	};
-	
-	updateNode(parentElement) {
-		ko.renderTemplate('edges', this, {}, parentElement);
-	};
-	
-	onProgramEvent(event) {
-		console.log('edgesevent', event.event);
-	};
-};
-
-components.register('edges', function(args) {
-	return new EdgesViewModel(args);
-});
-//*/
