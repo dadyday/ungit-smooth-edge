@@ -1,0 +1,11 @@
+{
+  "exports": {
+	"knockoutTemplates": {
+      "edges": "dummy.html"
+    },
+    "javascript": [
+		"edges.js",
+		"drawpath.js"
+	]
+  }
+}
