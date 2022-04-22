@@ -57,8 +57,8 @@ var DrawPath = function(x, y) {
 	};
 	this.path = function() {
 		var p = [];
-		for(var i in this.comm) p.push(this.comm[i].join(' '));
-		return p.join(',');
+		for (var i in this.comm) p.push(this.comm[i].join(' '));
+		return p.join(' ');
 	};
 	
 	this.put('M', x, y);

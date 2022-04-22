@@ -2,7 +2,7 @@
 
 
 var addMarker = function(html) {
-	var defs  = $('svg.graphLog defs')[0];
+	var defs = document.querySelector('svg.graphLog defs');
 	var mark = document.createElement('marker');
 	defs.appendChild(mark);
 	mark.outerHTML = html;
@@ -16,8 +16,8 @@ var doInit = function() {
 		'<path d="M -5 -3 L 5 0 L -5 3 z" fill="rgb(74, 74, 74)"></path>'+
 		'</marker>');
 	addMarker(
-		'<marker id="edgeArrowEnd" viewBox="0 0 10 10" refX="0" refY="2" markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">'+
-		'<path d="M 0 0 L 6 2 L 0 4 z" fill="rgb(74, 74, 74)"></path>'+
+		'<marker id="edgeArrowEnd" viewBox="-5 -5 15 15" refX="0" refY="2" markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">'+
+		'<path d="M 0 -3 L 10 2 L 0 7 z" fill="rgb(74, 74, 74)"></path>'+
 		'</marker>');
 	isInit = true;
 };
@@ -33,6 +33,7 @@ var setGraphAttr = function(val) {
 	var rad = main ? 50 : 35;
 	
 	var d = new DrawPath(x1, y1);
+	
 	switch (!dir ? 'direct' : type) {
 		case 'direct':
 			d.line(x2, y2);
@@ -60,7 +61,6 @@ var setGraphAttr = function(val) {
 			
 			break;
 	};
-	
 	this.element().setAttribute('d', d.path());
 	this.element().setAttribute('fill', 'none');
 	
