@@ -1,7 +1,7 @@
+const components = require('ungit-components');
+const moment = require('moment');
 
-
-
-var addMarker = function(html) {
+function addMarker(html) {
 	var defs = document.querySelector('svg.graphLog defs');
 	var mark = document.createElement('marker');
 	defs.appendChild(mark);
@@ -9,7 +9,7 @@ var addMarker = function(html) {
 };
 
 var isInit = false;
-var doInit = function() {
+function doInit() {
 	if (isInit) return;
 	addMarker(
 		'<marker id="edgeRevArrowEnd" viewBox="-5 -5 10 10" refX="0" refY="0" markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">'+
@@ -23,17 +23,17 @@ var doInit = function() {
 };
 
 var type = 'smooth'; //direct detour smooth curvy
-var setGraphAttr = function(val) {
+function setGraphAttr(val) {
 	var x2 = val[0], y2 = val[1];
 	var x1 = val[4], y1 = val[5];
 	var rev = y2 > y1 ? (x2 > x1) : (x2 < x1);
-	
+
 	var dir = x2 < x1 ? -1 : (x2 > x1 ? 1 : 0);
 	var main = x2 < 650;
 	var rad = main ? 50 : 35;
-	
+
 	var d = new DrawPath(x1, y1);
-	
+
 	switch (!dir ? 'direct' : type) {
 		case 'direct':
 			d.line(x2, y2);
@@ -42,7 +42,7 @@ var setGraphAttr = function(val) {
 		case 'detour':
 			if (dir < 0) d.line(x1, y2);
 			else d.line(x2, y1);
-			
+
 			d.line(x2, y2);
 			d.dist(rad);
 			break;
@@ -58,16 +58,56 @@ var setGraphAttr = function(val) {
 			break;
 		case 'curvy':
 			d.curve(0.4, x2, y2);
-			
+
 			break;
 	};
 	this.element().setAttribute('d', d.path());
 	this.element().setAttribute('fill', 'none');
-	
+
 	this.element().setAttribute('marker-end', dir < 0 ? 'url(#edgeRevArrowEnd)' : 'url(#edgeArrowEnd)');
 };
 
-var components = require('ungit-components');
+function computeNode(nodes) {
+	nodes = this.__parent.computeNode(nodes);
+
+	/*var lastOrder = -1;
+	nodes.forEach((oNode) => {
+		var oBranch = oNode.ideologicalBranch();
+		var aParent = oNode.parents();
+		if (aParent.length > 1 && oBranch.branchOrder == lastOrder) {
+			oNode.branchOrder(oBranch.branchOrder+1);
+		}
+		lastOrder = oBranch.branchOrder;
+	});//*/
+
+	// reset branchOrder
+	nodes.forEach((oNode) => oNode.flag = -1);
+
+	const setBranchOrder = (oNode, order) => {
+		if (oNode.flag > order) return;
+
+		var oBranch = oNode.ideologicalBranch();
+		oNode.branchOrder(order);
+		oNode.flag = order;
+
+		oNode.parents().forEach((parent) => {
+			var oParent = this.nodesById[parent];
+			if (oParent) {
+				setBranchOrder(oParent, order++);
+			}
+		});
+	};
+
+	nodes.forEach((oNode) => {
+		setBranchOrder(oNode, 1);
+	});//*/
+
+	//setBranchOrder(nodes[0], 0);
+	console.log(nodes[2]);
+    return nodes;
+};
+
+
 var GraphViewFactory = components.registered.graph;
 
 components.register('graph', function(args) {
@@ -75,7 +115,8 @@ components.register('graph', function(args) {
 	isInit = false;
 	gv.__parent = {
 		getEdge: gv.getEdge.bind(gv),
-		updateNode: gv.updateNode.bind(gv)
+		updateNode: gv.updateNode.bind(gv),
+		computeNode: gv.computeNode.bind(gv)
 	};
 	gv.getEdge = function(nodeAsha1, nodeBsha1) {
 		doInit();
@@ -85,8 +126,7 @@ components.register('graph', function(args) {
 	};
 	gv.updateNode = function(parentElement) {
 		this.__parent.updateNode(parentElement);
-	}
+	};
+	gv.computeNode = computeNode;
 	return gv;
 });
-
-
