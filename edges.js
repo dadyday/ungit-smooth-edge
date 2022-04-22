@@ -84,13 +84,19 @@ function computeNode(nodes) {
 	nodes.forEach((oNode) => oNode.flag = -1);
 
 	const setBranchOrder = (oNode, order) => {
-		if (oNode.flag > order) return;
+		const aParent = oNode.parents();
+		const isMerge = aParent.length > 1;
+		const oFirstParent = this.nodesById[aParent[0]];
+		const hasOrder = oFirstParent ? oFirstParent.flag <= order : false;
+		const isBranch = !isMerge && hasOrder && oFirstParent.flag < order;
 
-		var oBranch = oNode.ideologicalBranch();
+		console.log(oNode.sha1, order,isMerge,hasOrder,isBranch);
+
+		if (oNode.flag > order) return;
 		oNode.branchOrder(order);
 		oNode.flag = order;
 
-		oNode.parents().forEach((parent) => {
+		aParent.forEach((parent) => {
 			var oParent = this.nodesById[parent];
 			if (oParent) {
 				setBranchOrder(oParent, order++);
